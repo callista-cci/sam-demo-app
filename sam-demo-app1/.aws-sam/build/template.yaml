@@ -21,6 +21,18 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+  RestuarantFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: RestuarantFunction
+      Handler: app.restuarantHandler
+      Runtime: nodejs12.x
+      Events:
+        Restuarant:
+          Type: Api
+          Properties:
+            Path: /restuarant
+            Method: get
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
@@ -37,4 +49,20 @@ Outputs:
     Value:
       Fn::GetAtt:
       - HelloWorldFunctionRole
+      - Arn
+  RestuarantApi:
+    Description: API Gateway endpoint URL for Prod stage for Restuarant function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/restuarant/
+  RestuarantFunction:
+    Description: Restuarant Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - RestuarantFunction
+      - Arn
+  RestuarantFunctionIamRole:
+    Description: Implicit IAM Role created for Restuarant function
+    Value:
+      Fn::GetAtt:
+      - RestuarantFunctionRole
       - Arn
