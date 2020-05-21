@@ -2,7 +2,11 @@
 // const url = 'http://checkip.amazonaws.com/';
 let response;
 const AWS = require('aws-sdk')
+AWS.config.update({ region: 'us-east-2' });
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
+
+//aws_access_key_id = ASIAQZV6RMWN4ZOUGPWE
+//aws_secret_access_key = ayoWqGwSdn5gseSq/xU6szXOdCBx7LfiBaFJNf/5
 
 /**
  *
@@ -16,22 +20,33 @@ var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
  * @returns {Object} object - API Gateway Lambda Proxy Output Format
  * 
  */
+// POST https://4ggrrjbce4.execute-api.us-east-2.amazonaws.com/Prod/saverestuarant/
+// Body { 	"rId": "999", 	"rName": "Resturant 999" }
 
-// GET  https://4ggrrjbce4.execute-api.us-east-2.amazonaws.com/Prod/restuarant?rId=5
-// query param rId to fetch the user
+exports.saverestuarantHandler = (event, context, callback) => {
+  const { path, queryStringParameters, headers, body } = event;
 
-exports.restuarantHandler = (event, context, callback) => {
+
+  console.log("path:" + path)
+  console.log("body:" + body)
+
+  if (event.body) {
+    let body = JSON.parse(event.body)
+    if (body.rId)
+      rId = body.rId;
+    if (body.rName)
+      rName = body.rName
+  }
+
   var params = {
     TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
-    ExpressionAttributeValues: {
-      ":v1": {
-        S: event.queryStringParameters.rId
-      }
-    },
-    KeyConditionExpression: "id = :v1",
-
+    Item: {
+      id: { S: rId },
+      resturantName: { S: rName }
+    }
   }
-  var ddbPromise = ddb.query(params).promise().then(function (data) {
+
+  var ddbPromise = ddb.putItem(params).promise().then(function (data) {
     console.log(data);
     response = {
       'statusCode': 200,
@@ -47,4 +62,6 @@ exports.restuarantHandler = (event, context, callback) => {
       }
       callback(null, response)
     });
+
+
 };

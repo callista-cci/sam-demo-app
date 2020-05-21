@@ -1,6 +1,8 @@
 // const axios = require('axios')
 // const url = 'http://checkip.amazonaws.com/';
 let response;
+const AWS = require('aws-sdk')
+var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
 
 /**
  *
@@ -15,29 +17,34 @@ let response;
  * 
  */
 
-exports.restuarantHandler = async (event, context) => {
-    try {
-        // const ret = await axios(url);
-        response = {
-            'statusCode': 200,
-            'body': JSON.stringify([{
-                id: '123',
-                restuarantName: 'James Restuarant',
-                location : 'Margao Goa'
-                // location: ret.data.trim()
-            },
-            {
-                id: '124',
-                restuarantName: 'Johnnys Restuarant',
-                location : 'Margao Goa'
-                // location: ret.data.trim()
-            },
-        ])
-        }
-    } catch (err) {
-        console.log(err);
-        return err;
-    }
+// GET  https://4ggrrjbce4.execute-api.us-east-2.amazonaws.com/Prod/restuarant?rId=5
+// query param rId to fetch the user
 
-    return response
+exports.restuarantHandler = (event, context, callback) => {
+  var params = {
+    TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+    ExpressionAttributeValues: {
+      ":v1": {
+        S: event.queryStringParameters.rId
+      }
+    },
+    KeyConditionExpression: "id = :v1",
+
+  }
+  var ddbPromise = ddb.query(params).promise().then(function (data) {
+    console.log(data);
+    response = {
+      'statusCode': 200,
+      'body': JSON.stringify(data, null, 2)
+    }
+    callback(null, response)
+  })
+    .catch(function (err) {
+      console.log(err);
+      response = {
+        'statusCode': 400,
+        'body': JSON.stringify(err, null, 2)
+      }
+      callback(null, response)
+    });
 };

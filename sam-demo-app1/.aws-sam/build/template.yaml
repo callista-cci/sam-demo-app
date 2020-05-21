@@ -27,12 +27,48 @@ Resources:
       CodeUri: RestuarantFunction
       Handler: app.restuarantHandler
       Runtime: nodejs12.x
+      Policies: AmazonDynamoDBFullAccess
       Events:
         Restuarant:
           Type: Api
           Properties:
             Path: /restuarant
             Method: get
+  SaveRestuarantFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SaveRestuarantFunction
+      Handler: app.saverestuarantHandler
+      Runtime: nodejs12.x
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        Restuarant:
+          Type: Api
+          Properties:
+            Path: /saverestuarant
+            Method: post
+  RestuarantTable:
+    Type: AWS::Serverless::SimpleTable
+    TableName: restuarantTable
+    PrimaryKey:
+      Name: restuarantId
+      Type: String
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+    SSESpecification:
+      SSEEnabled: true
+  RestuarantOneTable:
+    Type: AWS::Serverless::SimpleTable
+    TableName: restuarantOneTable
+    PrimaryKey:
+      Name: rId
+      Type: String
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+    SSESpecification:
+      SSEEnabled: true
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
@@ -65,4 +101,20 @@ Outputs:
     Value:
       Fn::GetAtt:
       - RestuarantFunctionRole
+      - Arn
+  SaveRestuarantApi:
+    Description: API Gateway endpoint URL for Prod stage for Save Restuarant function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/saverestuarant/
+  SaveRestuarantFunction:
+    Description: Save Restuarant Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - SaveRestuarantFunction
+      - Arn
+  SaveRestuarantFunctionIamRole:
+    Description: Implicit IAM Role created for Restuarant function
+    Value:
+      Fn::GetAtt:
+      - SaveRestuarantFunctionRole
       - Arn

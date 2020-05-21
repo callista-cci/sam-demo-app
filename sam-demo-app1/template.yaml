@@ -29,12 +29,49 @@ Resources:
       CodeUri: restuarant/
       Handler: app.restuarantHandler
       Runtime: nodejs12.x
+      Policies: AmazonDynamoDBFullAccess
       Events:
         Restuarant:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /restuarant
             Method: get
+  SaveRestuarantFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: saverestuarant/
+      Handler: app.saverestuarantHandler
+      Runtime: nodejs12.x
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        Restuarant:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /saverestuarant
+            Method: post
+  RestuarantTable:
+    Type: AWS::Serverless::SimpleTable
+    TableName: restuarantTable
+    PrimaryKey:
+      Name: restuarantId
+      Type: String
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+    SSESpecification:
+      SSEEnabled: true
+  RestuarantOneTable:
+    Type: AWS::Serverless::SimpleTable
+    TableName: restuarantOneTable
+    PrimaryKey:
+      Name: rId
+      Type: String
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+    SSESpecification:
+      SSEEnabled: true
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -57,3 +94,13 @@ Outputs:
   RestuarantFunctionIamRole:
     Description: "Implicit IAM Role created for Restuarant function"
     Value: !GetAtt RestuarantFunctionRole.Arn
+  SaveRestuarantApi:
+    Description: "API Gateway endpoint URL for Prod stage for Save Restuarant function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/saverestuarant/"
+  SaveRestuarantFunction:
+    Description: "Save Restuarant Lambda Function ARN"
+    Value: !GetAtt SaveRestuarantFunction.Arn
+  SaveRestuarantFunctionIamRole:
+    Description: "Implicit IAM Role created for Restuarant function"
+    Value: !GetAtt SaveRestuarantFunctionRole.Arn
+
