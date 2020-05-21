@@ -5,9 +5,6 @@ const AWS = require('aws-sdk')
 AWS.config.update({ region: 'us-east-2' });
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
 
-//aws_access_key_id = ASIAQZV6RMWN4ZOUGPWE
-//aws_secret_access_key = ayoWqGwSdn5gseSq/xU6szXOdCBx7LfiBaFJNf/5
-
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
