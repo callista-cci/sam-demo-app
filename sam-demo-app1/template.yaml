@@ -49,17 +49,24 @@ Resources:
           Properties:
             Path: /saverestuarant
             Method: post
-  RestuarantTable:
-    Type: AWS::Serverless::SimpleTable
-    TableName: restuarantTable
-    PrimaryKey:
-      Name: restuarantId
-      Type: String
-    ProvisionedThroughput:
-      ReadCapacityUnits: 5
-      WriteCapacityUnits: 5
-    SSESpecification:
-      SSEEnabled: true
+  CustomerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+       - AttributeName: customerId
+         AttributeType: S
+       - AttributeName: customerFName
+         AttributeType: S 
+      KeySchema:
+        - AttributeName: customerId
+          KeyType: HASH
+        - AttributeName: customerFName
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      SSESpecification:
+        SSEEnabled: true
   RestuarantOneTable:
     Type: AWS::Serverless::SimpleTable
     TableName: restuarantOneTable

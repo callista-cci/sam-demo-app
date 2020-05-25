@@ -3,6 +3,7 @@
 let response;
 const AWS = require('aws-sdk')
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
+let documentClient = new AWS.DynamoDB.DocumentClient({    'region': 'us-east-2'});
 
 /**
  *
@@ -21,30 +22,58 @@ var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
 // query param rId to fetch the user
 
 exports.restuarantHandler = (event, context, callback) => {
-  var params = {
-    TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
-    ExpressionAttributeValues: {
-      ":v1": {
-        S: event.queryStringParameters.rId
-      }
-    },
-    KeyConditionExpression: "id = :v1",
+var params = {
+  TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+  Limit: 10
+};
 
+var promise = documentClient.scan(params).promise().then(function(err, data) {
+  if (err) {
+    console.log(err);
+    response = {
+      'statusCode': 400,
+      'body': JSON.stringify(err, null, 2)
+    }
+    callback(null, response);
   }
-  var ddbPromise = ddb.query(params).promise().then(function (data) {
+  else {
     console.log(data);
     response = {
-      'statusCode': 200,
-      'body': JSON.stringify(data, null, 2)
-    }
-    callback(null, response)
-  })
-    .catch(function (err) {
-      console.log(err);
-      response = {
-        'statusCode': 400,
-        'body': JSON.stringify(err, null, 2)
-      }
-      callback(null, response)
-    });
+          'statusCode': 200,
+          'body': JSON.stringify(data, null, 2)
+        }
+    callback(null, response);
+  }
+});
+
+
+
+  // var params = {
+  //   TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+  //   ExpressionAttributeValues: {
+  //     ":v1": {
+  //       S: event.queryStringParameters.rId
+  //     }
+  //   },
+  //   KeyConditionExpression: "id = :v1",
+
+  // }yy
+   
+
+  // var ddbPromise = ddb.query(params).promise().then(function (data) {
+  //   console.log(data);
+  //   response = {
+  //     'statusCode': 200,
+  //     'body': JSON.stringify(data, null, 2)
+  //   }
+  //   callback(null, response)
+  // })
+  //   .catch(function (err) {
+  //     console.log(err);
+  //     response = {
+  //       'statusCode': 400,
+  //       'body': JSON.stringify(err, null, 2)
+  //     }
+  //     callback(null, response)
+  //   });
 };

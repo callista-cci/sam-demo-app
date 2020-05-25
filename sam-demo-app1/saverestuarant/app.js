@@ -23,7 +23,7 @@ var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
 exports.saverestuarantHandler = (event, context, callback) => {
   const { path, queryStringParameters, headers, body } = event;
 
-
+  console.log("operation:" + event.operation)
   console.log("path:" + path)
   console.log("body:" + body)
 
