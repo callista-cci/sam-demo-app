@@ -4,6 +4,7 @@ let response;
 const AWS = require('aws-sdk')
 AWS.config.update({ region: 'us-east-2' });
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
+let documentClient = new AWS.DynamoDB.DocumentClient({    'region': 'us-east-2'});
 
 /**
  *
@@ -34,6 +35,7 @@ exports.saverestuarantHandler = (event, context, callback) => {
     if (body.rName)
       rName = body.rName
   }
+/* POST to save to Table using Dynamo DB
 
   var params = {
     TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
@@ -60,5 +62,71 @@ exports.saverestuarantHandler = (event, context, callback) => {
       callback(null, response)
     });
 
+*/
+// Body : 
+/* {
+	"id": "5562",
+	"resturantName": "Resturant 5562",
+	"resturantAddress": "Resturant 5562",
+	"capacity": 100
+}
+*/
+// let body1 = JSON.parse(event.body)
+// console.log("body:" + body1)
+//     var params = {
+//       TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+//       Item: body1
+//     };
+    
+    // var promise = documentClient.put(params).promise().then(function(err, data) {
+    //   if (err) {
+    //     console.log(err);
+    //     response = {
+    //       'statusCode': 400,
+    //       'body': JSON.stringify(err, null, 2)
+    //     }
+    //     callback(null, response);
+    //   }
+    //   else {
+    //     console.log(data);
+    //     response = {
+    //           'statusCode': 200,
+    //           'body': JSON.stringify(data, null, 2)
+    //         }
+    //     callback(null, response);
+    //   }
+    // });
+
+
+    let body1 = JSON.parse(event.body)
+    console.log("body:" + body1)
+        var params = {
+          TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+          Key: body1,
+          UpdateExpression: "set rating = rating + :val",
+          ExpressionAttributeValues:{
+              ":val": 1
+          },
+          ReturnValues:"UPDATED_NEW"
+        };
+
+    var promise = documentClient.update(params).promise().then(function(err, data) {
+      if (err) {
+        console.log(err);
+        response = {
+          'statusCode': 400,
+          'body': JSON.stringify(err, null, 2)
+        }
+        callback(null, response);
+      }
+      else {
+        console.log(data);
+        response = {
+              'statusCode': 200,
+              'body': JSON.stringify(data, null, 2)
+            }
+        callback(null, response);
+      }
+    });
 
 };
