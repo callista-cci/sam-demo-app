@@ -71,33 +71,38 @@ exports.saverestuarantHandler = (event, context, callback) => {
 	"capacity": 100
 }
 */
-// let body1 = JSON.parse(event.body)
-// console.log("body:" + body1)
-//     var params = {
-//       TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
-//       Item: body1
-//     };
+let body1 = JSON.parse(event.body)
+console.log("body:" + body1)
+    var params = {
+      TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+      Item: body1
+    };
     
-    // var promise = documentClient.put(params).promise().then(function(err, data) {
-    //   if (err) {
-    //     console.log(err);
-    //     response = {
-    //       'statusCode': 400,
-    //       'body': JSON.stringify(err, null, 2)
-    //     }
-    //     callback(null, response);
-    //   }
-    //   else {
-    //     console.log(data);
-    //     response = {
-    //           'statusCode': 200,
-    //           'body': JSON.stringify(data, null, 2)
-    //         }
-    //     callback(null, response);
-    //   }
-    // });
+    var promise = documentClient.put(params).promise().then(function(err, data) {
+      if (err) {
+        console.log(err);
+        response = {
+          'statusCode': 400,
+          'body': JSON.stringify(err, null, 2)
+        }
+        callback(null, response);
+      }
+      else {
+        console.log(data);
+        response = {
+              'statusCode': 200,
+              'body': JSON.stringify(data, null, 2)
+            }
+        callback(null, response);
+      }
+    });
 
+/* 
+// BODY
+// {
+// 	"id": "111"
 
+// }
     let body1 = JSON.parse(event.body)
     console.log("body:" + body1)
         var params = {
@@ -128,5 +133,7 @@ exports.saverestuarantHandler = (event, context, callback) => {
         callback(null, response);
       }
     });
+
+    */
 
 };

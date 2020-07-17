@@ -29,7 +29,8 @@ var params = {
   Limit: 10
 };
 
-var promise = documentClient.scan(params).promise().then(function(err, data) {
+
+var promise = documentClient.scan(params).promise().then(function(data, err) {
   if (err) {
     console.log(err);
     response = {
