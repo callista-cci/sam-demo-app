@@ -22,32 +22,80 @@ let documentClient = new AWS.DynamoDB.DocumentClient({    'region': 'us-east-2'}
 // query param rId to fetch the user
 
 exports.restuarantHandler = (event, context, callback) => {
+  const { path, queryStringParameters, headers, body } = event;
   // Get from table using document client
-  
-var params = {
-  TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
-  Limit: 10
-};
-
-
-var promise = documentClient.scan(params).promise().then(function(data, err) {
-  if (err) {
-    console.log(err);
-    response = {
-      'statusCode': 400,
-      'body': JSON.stringify(err, null, 2)
-    }
-    callback(null, response);
-  }
-  else {
-    console.log(data);
-    response = {
-          'statusCode': 200,
-          'body': JSON.stringify(data, null, 2)
+  var httpMethod = event.httpMethod;
+  switch (httpMethod) {
+    case "GET" : 
+      var params = {
+        TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+        //Limit: 10 // to set limit of results
+      };
+      
+      
+      var promise = documentClient.scan(params).promise().then(function(data, err) {
+        if (err) {
+          console.log(err);
+          response = {
+            'statusCode': 400,
+            'body': JSON.stringify(err, null, 2)
+          }
+          callback(null, response);
         }
-    callback(null, response);
+        else {
+          console.log(data);
+          response = {
+                'statusCode': 200,
+                'body': JSON.stringify(data, null, 2)
+              }
+          callback(null, response);
+        }
+      });
+    
+      break;
+    case "POST" :
+      if (event.body) {
+        let body = JSON.parse(event.body)
+        if (body.rId)
+          rId = body.rId;
+        if (body.rName)
+          rName = body.rName
+      }
+
+     
+      let body1 = JSON.parse(event.body)
+      body1.id = context.awsRequestId;
+console.log("body:" + body1)
+    var params = {
+      TableName: "sam-demo-app1-RestuarantOneTable-QWCHW4V716UH",
+      Item: body1
+    };
+    
+    var promise = documentClient.put(params).promise().then(function(data, err) {
+      if (err) {
+        console.log(err);
+        response = {
+          'statusCode': 400,
+          'body': JSON.stringify(err, null, 2)
+        }
+        callback(null, response);
+      }
+      else {
+        console.log(data);
+        response = {
+              'statusCode': 200,
+              'body': JSON.stringify(data, null, 2)
+            }
+        callback(null, response);
+      }
+    });
+
+      break;
+    default:
+      break;
   }
-});
+
+
 
 // Using Dynamo DB : GET from table
 /*

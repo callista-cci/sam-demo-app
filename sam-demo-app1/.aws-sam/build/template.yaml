@@ -68,6 +68,11 @@ Resources:
           Properties:
             Path: /restuarant
             Method: get
+        PostRestuarant:
+          Type: Api
+          Properties:
+            Path: /restuarant
+            Method: post
   SaveRestuarantFunction:
     Type: AWS::Serverless::Function
     Properties:
